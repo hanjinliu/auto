@@ -6,7 +6,6 @@ class Controller:
         self.root.title("Controller")
         self.root.geometry("400x300")
         
-        
         if not isinstance(funclist, list):
             funclist = [funclist]
         

@@ -1,4 +1,7 @@
+# for Jython
+
 class Controller:
+    
     def __init__(self, arg):
         pass
     

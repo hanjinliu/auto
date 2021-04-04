@@ -109,7 +109,11 @@ class AutoAnalyzer:
             example, `funcs={"tif": tif_func, "txt": txt_func}` means that
             for path=".../XX.tif", `tif_func(path)` will be called and for 
             path=".../YY.txt", `txt_func(path)` will be called.
-        """        
+        """
+        
+        if not hasattr(self.controller, "root"):
+            self.run_without_tk(funcs)
+            return None
         
         th_run = threading.Thread(target=self._run_loop)
         
@@ -129,7 +133,7 @@ class AutoAnalyzer:
         
         return None
     
-    def run2(self,  funcs):
+    def run_without_tk(self,  funcs):
         self.init()
         self.loop = True
         self.function_dict = CasedFunction(funcs)
@@ -146,8 +150,7 @@ class AutoAnalyzer:
                 (f not in self.hist) and self._run(f)
             time.sleep(self.dt)
         
-        return None
-    
+        return None    
     
     def add_log(self, content):
         self.log.append(content)
