@@ -42,6 +42,16 @@ def add_directory(path, newdir="Results"):
         os.makedirs(new_dname, exist_ok=False)
     return os.path.join(new_dname, fname)
 
+def change_ext(path, new_ext="txt"):
+    """
+    Change extension.
+    change_ext(".../XX.tif", "csv") returns ".../XX.csv"
+    """
+    name, ext = os.path.splitext(path)
+    if not new_ext.startswith("."):
+        new_ext = "." + new_ext
+    return name + new_ext
+
 
 class CasedFunction:
     def __init__(self, d):

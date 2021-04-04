@@ -15,7 +15,7 @@ except Exception:
 
 class AutoAnalyzer:
     def __init__(self, path, recursive=False, include=None, exclude=None, 
-                 dt=10, t_end=10*60*60, n_files=100):
+                 dt=1, t_end=10*60*60, n_files=100):
         """
         Parameters
         ----------
@@ -28,7 +28,7 @@ class AutoAnalyzer:
         exclude : str, optional [^1]
             All the files whose name matches this regular expression will be ignored.
         dt : float, optional
-            All the files will be scanned every `dt` seconds, by default 10 seconds.
+            All the files will be scanned every `dt` seconds, by default 1 seconds.
         t_end : float, optional
             After `t_end` seconds this program will stop, by default 10 hours.
         n_files : int, optional [^2]
