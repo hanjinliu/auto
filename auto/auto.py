@@ -120,7 +120,6 @@ class AutoAnalyzer:
         self.function_dict = CasedFunction(funcs)
         self.controller = Controller(stop)
         
-        
         th_run.start()
         self.controller.start()
         

@@ -8,6 +8,9 @@ def now():
     return datetime.now().strftime(r"%Y/%m/%d %H:%M:%S")
 
 def rename(path, newname):
+    """
+    Totally rename file.
+    """    
     dname = os.path.dirname(path)
     return os.path.join(dname, newname)
 
