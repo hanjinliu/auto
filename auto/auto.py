@@ -1,19 +1,12 @@
 import os
 import glob
 import time
-from datetime import datetime
 import threading
 try:
     from .controller import Controller
 except Exception:
     from .altcontroller import Controller
-
-
-def now():
-    """
-    Get current time in formatted string.
-    """    
-    return datetime.now().strftime(r"%Y/%m/%d %H:%M:%S")
+from .util import now
 
 def none_func(*args, **kwargs):
     return None
