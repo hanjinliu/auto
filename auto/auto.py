@@ -3,7 +3,7 @@ import glob
 import time
 import threading
 import re
-from .util import now
+from .util import now, CasedFunction
 
 try:
     from .controller import Controller
@@ -11,39 +11,7 @@ try:
 except Exception:
     from .altcontroller import Controller
     USE_TK = False
-
-def none_func(*args, **kwargs):
-    return None
-
-class CasedFunction:
-    def __init__(self, d, default_key="*"):
-        """
-        Parameters
-        ----------
-        d : dict or callable
-            Make 'key -> callable' dictionary
-        """
-        self.default_key = default_key
-        
-        if isinstance(d, dict):
-            self.funcs = d
-        else:
-            raise TypeError
-        
-        if default_key not in self.funcs.keys():
-            self.funcs[default_key] = none_func
-
-        # check if callable
-        for k, f in self.funcs.items():
-            if not isinstance(k, str):
-                raise TypeError("non-string object in key: {}".format(k))
-            if not callable(f):
-                raise TypeError("non-callable object contained: {}".format(f))
     
-    def __getitem__(self, key):
-        if key not in self.funcs.keys():
-            key = self.default_key
-        return self.funcs[key]
 
 class AutoAnalyzer:
     def __init__(self, path, recursive=False, include=None, exclude=None, 
@@ -202,11 +170,16 @@ class AutoAnalyzer:
     def _run(self, fp):
         _, ext = os.path.splitext(fp)
         func = self.function_dict[ext[1:]]
-        if func is not none_func:
-            self._add_log("{} | start: {}".format(now(), fp))
+        if func is not None:
+            self._add_log("{} | loaded: {}".format(now(), fp))
             self.hist.append(fp)
-            self.last_ans = func(fp)    
-            self._add_log("{} | finish: {}".format(now(), fp))
+            try:
+                self.last_ans = func(fp)    
+            except Exception as e:
+                err_cls = e.__class__.__name__
+                self._add_log("{} | {}: {}".format(now(), err_cls, e))
+            else:
+                self._add_log("{} | finish: {}".format(now(), fp))
             
         return None
 
