@@ -33,6 +33,7 @@ imp = IJ.openImage("C:/.../Image-1.tif");
 IJ.run(imp, "Median...", "radius=5");
 IJ.saveAs(imp, "Tiff", "C:/.../Med_Image-1.tif");
 ```
+
 From this record you can automate analysis.
 
 ```python
@@ -95,31 +96,50 @@ AutoAnalyzer(self, path, recursive=False, include=None, exclude=None, dt=1, t_en
 
 *arguments*
 - `path` : str
+  
   Path to the directory that will contain files for analysis.
 
 *keyward arguments*
 - `recursive` : bool, optional
+  
   If recursively search for files, by default False
+
 - `include` : str, optional
+  
   Only files whose name matches this regular expression will be analyzed.
 - `exclude` : str, optional
   All the files whose name matches this regular expression will be ignored.
+
 - `dt` : float, optional
+  
   All the files will be scanned every `dt` seconds, by default 1 seconds.
+
 - `t_end` : float, optional
+  
   After `t_end` seconds this program will stop, by default 10 hours.
+
 - `n_files` : int, optional
+  
   After `n_files` files are analyzed this program will stop, by default 100 files.
 
 ## Other Utility Functions
 
 - `add_prefix(path, prefix="E-")`
+  
   e.g.) `add_prefix(".../XX.tif", "Pre")` &rarr; `".../PreXX.tif"`
+
 - `add_suffix(path, suffix="-0")`
+  
   e.g.) `add_suffix(".../XX.tif", "Suf")` &rarr; `".../XXSuf.tif"`
+
 - `add_directory(path, newdir="Results")`
+  
   e.g.) `add_directory(".../XX.tif", "NewDir")` &rarr; `".../NewDir/XXS.tif"`
+  
 - `rename(path, newname)`
+  
   e.g.) `rename(".../XX.tif", "YY.tif")` &rarr; `".../YY.tif"`
+
 - `change_ext(path, new_ext="txt")`
+  
   e.g.) `change_ext(".../XX.tif", "csv")` &rarr; `".../XX.csv"`
