@@ -42,6 +42,9 @@ class AutoAnalyzer:
         inappropriately. n_files will be a `stopper` on this accident.
         """        
         
+        if not os.path.exists(path):
+            raise FileNotFoundError(path)
+        
         self.path = path
         
         # prepare pattern matching function
@@ -143,7 +146,8 @@ class AutoAnalyzer:
         
         while self.loop:
             for f in self.scan():
-                (f not in self.hist) and self._run(f)
+                if f not in self.hist:
+                    self._run(f)
             
                 if time.time() - t0 > self.t_end:
                     print("Analysis time exceeded {} sec.".format(self.t_end))
@@ -170,15 +174,18 @@ class AutoAnalyzer:
         _, ext = os.path.splitext(fp)
         func = self.function_dict[ext[1:]]
         if func is not None:
-            self._add_log("{} | loaded: {}".format(now(), fp))
-            self.hist.append(fp)
             try:
-                self.last_ans = func(fp)    
+                self.last_ans = func(fp)
+            except PermissionError:
+                pass
             except Exception as e:
                 err_cls = e.__class__.__name__
                 self._add_log("{} | {}: {}".format(now(), err_cls, e))
+                self.hist.append(fp)
+                
             else:
-                self._add_log("{} | finish: {}".format(now(), fp))
+                self._add_log("{} | finished: {}".format(now(), fp))
+                self.hist.append(fp)
             
         return None
 
