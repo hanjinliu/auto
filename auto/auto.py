@@ -61,7 +61,8 @@ class AutoAnalyzer:
             reg_ex = re.compile(exclude)
             matches = lambda s: reg_in.match(s) and not reg_ex.match(s)
         
-        # prepare searching function
+        # prepare scanning function
+        # scan() returns all the files under self.path
         if recursive:
             glob_path = os.path.join(self.path, "**", "*")
             scan = lambda: (f for f in glob.glob(glob_path, recursive=True) 
@@ -92,6 +93,7 @@ class AutoAnalyzer:
         self.loop = False
         self.function_dict = None # ext -> function
         self.controller = None
+        self.function_running = False
         return None
         
     def run(self, funcs):
@@ -114,18 +116,30 @@ class AutoAnalyzer:
         th_run = threading.Thread(target=self._run_loop)
         
         def stop(arg):
-            self.loop = False
+            self.loop = False 
             self.controller.stop()
-            th_run.join()
+            if self.function_running:
+                print("Stopped. Please wait until following function call ends:")
+                print(self.function_running)
+            if th_run.is_alive():
+                th_run.join()
+            
             
         self.init()
         self.loop = True
         self.function_dict = CasedFunction(funcs)
         self.controller = Controller(stop)
         
-        th_run.start()
-        self.controller.start()
-        
+        try:
+            th_run.start()
+            self.controller.start()
+        except KeyboardInterrupt as e:
+            self._add_log("{} | {}".format(now(), "Keyboard Interrupt"))
+            stop(0)
+            raise KeyboardInterrupt(e)
+            
+        stop(0)
+            
         return None
     
     def run_without_tk(self,  funcs):
@@ -138,6 +152,14 @@ class AutoAnalyzer:
         self.controller = Controller(None)
         self._run_loop()
         
+        return None
+    
+    def save_log(self, path=None):
+        if path is None:
+            path = os.path.join(self.path, "auto_log.txt")
+        
+        with open(path, "w") as f:
+            f.write("\n".join(self.log))
         return None
     
     def _run_loop(self):
@@ -160,8 +182,8 @@ class AutoAnalyzer:
                     print("For larger number, set n_files to larger value (100 by default).")
                     self.loop = False
                     break
-            
-            time.sleep(self.dt)    
+                
+            time.sleep(self.dt)
         
         return None    
     
@@ -175,10 +197,16 @@ class AutoAnalyzer:
         func = self.function_dict[ext[1:]]
         if func is not None:
             try:
+                self.function_running = func.__name__
                 self.last_ans = func(fp)
+                self.function_running = None
+                
             except PermissionError:
+                # When the file is in a under-saving state
                 pass
+            
             except Exception as e:
+                # Keep scanning while displaying the exception
                 err_cls = e.__class__.__name__
                 self._add_log("{} | {}: {}".format(now(), err_cls, e))
                 self.hist.append(fp)
@@ -186,6 +214,5 @@ class AutoAnalyzer:
             else:
                 self._add_log("{} | finished: {}".format(now(), fp))
                 self.hist.append(fp)
-            
         return None
 

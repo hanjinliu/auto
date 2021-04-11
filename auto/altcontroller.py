@@ -6,10 +6,10 @@ class Controller:
         pass
     
     def start(self):
-        pass
+        self.exitflag = False
     
     def stop(self):
-        pass
+        self.exitflag = True
     
     def print_txt(self, txt):
         print(txt)

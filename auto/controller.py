@@ -5,6 +5,7 @@ GREEN = "#3FFC0C"
 
 class Controller:
     def __init__(self, funclist):
+        self.exitflag = False
         self.root = tkinter.Tk()
         self.root.configure(bg=DARK)
         self.root.title("Controller")
@@ -35,10 +36,14 @@ class Controller:
         
 
     def start(self):
+        self.exitflag = False
         self.root.mainloop()
         
     def stop(self):
-        self.root.destroy()
+        if not self.exitflag:
+            self.root.destroy()
+        self.exitflag = True
     
     def print_txt(self, txt):
-        self.txt_wid.insert("end", txt + "\n")
+        if not self.exitflag:
+            self.txt_wid.insert("end", txt + "\n")
